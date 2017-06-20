@@ -1,20 +1,31 @@
 # gorocksdb, a Go wrapper for RocksDB
 
-[![Build Status](https://travis-ci.org/tecbot/gorocksdb.png)](https://travis-ci.org/tecbot/gorocksdb) [![GoDoc](https://godoc.org/github.com/tecbot/gorocksdb?status.png)](http://godoc.org/github.com/tecbot/gorocksdb)
-
 ## Install
 
-There exist two options to install gorocksdb.
-You can use either a own shared library or you use the embedded RocksDB version from [CockroachDB](https://github.com/cockroachdb/c-rocksdb).
+This fork exists mainly for compatiability with rocksdb v4.11.2 with lz4 compression.
+Additionaly, it has an Unsafe Iterator.
 
-To install the embedded version (it might take a while):
+### Install Rocksdb
 
-    go get -tags=embed github.com/tecbot/gorocksdb
+```
+sudo apt-get install -y build-essential checkinstall
+sudo apt-get install libgflags-dev
+sudo apt-get install libsnappy-dev zlib1g-dev libbz2-dev liblz4-1 liblz4-tool liblz4-dev
 
-If you want to go the way with the shared library you'll need to build
-[RocksDB](https://github.com/facebook/rocksdb) before on your machine.
-If you built RocksDB you can install gorocksdb now:
+git clone https://github.com/facebook/rocksdb.git
+cd rocksdb
+git checkout v4.11.2
+make shared_lib
 
-    CGO_CFLAGS="-I/path/to/rocksdb/include" \
-    CGO_LDFLAGS="-L/path/to/rocksdb -lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy -llz4" \
-      go get github.com/tecbot/gorocksdb
+# Optional step to add it to the default location
+make install-shared INSTALL_PATH=/usr
+```
+
+```
+mkdir -p $GOPATH/src/github.com/deep-compute && cd $_ && git clone https://github.com/deep-compute/gorocksdb.git
+cd gorocksdb
+git checkout v4.11.2-lz4-unsafe-iterator
+
+# If rocksdb was installed at the /usr install path
+CGO_CFLAGS="-I/usr/include/rocksdb" CGO_LDFLAGS="-L/usr/lib -lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy -llz4" go install
+```
